@@ -6,7 +6,7 @@
 namespace gk {
     class HTTP final : public TCP {
     protected:
-        void OnReceive(const SOCKET socket, const std::string &message) override {
+        void OnReceive(const int socket, const std::string &message) override {
             const std::string body = R"(<!DOCTYPE html>
 <html lang="en">
 <head>
