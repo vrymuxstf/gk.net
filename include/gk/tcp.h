@@ -22,18 +22,26 @@
 #endif
 
 namespace gk {
+#ifdef __unix
+    typedef int SOCKET_TYPE;
+#endif
+
+#ifdef WIN32
+    typedef SOCKET SOCKET_TYPE;
+#endif
+
     class TCP {
-        int socket_;
+        SOCKET_TYPE socket_;
 
         std::thread accpet_thread_;
 
     protected:
-        virtual void OnReceive(const int socket, const std::string &message) {
+        virtual void OnReceive(const SOCKET_TYPE socket, const std::string &message) {
         }
 
     public:
         std::mutex clients_mutex;
-        std::vector<int> clients_;
+        std::vector<SOCKET_TYPE> clients_;
 
         bool running = true;
 
@@ -84,25 +92,37 @@ namespace gk {
                         std::lock_guard lock(clients_mutex);
 
                         clients_.erase(
-                            std::remove_if(clients_.begin(), clients_.end(), [client](const int socket) {
+                            std::remove_if(clients_.begin(), clients_.end(), [client](const SOCKET_TYPE socket) {
                                 return socket == client;
                             }),
                             clients_.end()
                         );
 
+#ifdef __unix
                         close(client);
+#endif
+
+#ifdef WIN32
+                        closesocket(client);
+#endif
                     }).detach();
                 }
             });
         }
 
         virtual ~TCP() {
+#ifdef __unix
             close(socket_);
+#endif
+
+#ifdef WIN32
+            closesocket(socket_);
+#endif
 
             accpet_thread_.join();
         }
 
-        static void Send(const int &socket, const std::string &message) {
+        static void Send(const SOCKET_TYPE &socket, const std::string &message) {
             send(socket, message.c_str(), static_cast<int>(message.length()), 0);
         }
     };
