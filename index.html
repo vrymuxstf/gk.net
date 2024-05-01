@@ -1,13 +1,4 @@
-#include <iostream>
-#include <sstream>
-
-#include "gk/tcp.h"
-
-namespace gk {
-    class HTTP final : public TCP {
-    protected:
-        void OnReceive(const SOCKET socket, const std::string &message) override {
-            const std::string body = R"(<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -131,40 +122,4 @@ namespace gk {
 </script>
 
 </body>
-</html>)";
-
-            std::stringstream http_header;
-            http_header << "HTTP/1.1 200 OK\n";
-            http_header << "Content-Type: text/html\n";
-            http_header << "Content-Length: " << body.size() << "\n";
-            http_header << "\n";
-            http_header << body;
-
-            Send(socket, http_header.str());
-        }
-
-    public:
-        HTTP() : TCP(7777) {
-            std::string addr;
-            unsigned short port;
-
-            GetLocalName(addr, port);
-
-            std::cout << "http://" << addr << ":" << port << std::endl;
-        }
-    };
-}
-
-int main() {
-    gk::HTTP http;
-
-    while (true) {
-        std::string input;
-        std::getline(std::cin, input);
-        if (input == "exit") {
-            break;
-        }
-    }
-
-    return 0;
-}
+</html>
