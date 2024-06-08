@@ -21,7 +21,7 @@
 
 #endif
 
-namespace gk {
+namespace gk::TCP {
 #ifdef __unix
     typedef int SOCKET_TYPE;
 #endif
@@ -30,7 +30,7 @@ namespace gk {
     typedef SOCKET SOCKET_TYPE;
 #endif
 
-    class TCP {
+    class Socket {
         SOCKET_TYPE socket_;
 
         std::thread accpet_thread_;
@@ -57,7 +57,7 @@ namespace gk {
             port = ntohs(real_addr.sin_port);
         }
 
-        explicit TCP(const unsigned short port = 0) {
+        explicit Socket(const unsigned short port = 0) {
             socket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
             sockaddr_in addr{};
